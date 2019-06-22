@@ -7,6 +7,7 @@ import { SaveEmployeeComponent } from './employee/save-employee/save-employee.co
 const appRoutes: Routes = [
   { path: 'list', component: ListEmployeeComponent },
   { path: 'create', component: SaveEmployeeComponent },
+  { path: 'update/:id', component: SaveEmployeeComponent },
   { path: '', redirectTo: '/list', pathMatch: 'full' }
 ];
 

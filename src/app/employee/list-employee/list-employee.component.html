@@ -1,3 +1,12 @@
-<p>
-  list-employee works!
-</p>
+<table class="table">
+  <tr *ngFor="let item of employeeList">
+    <td>{{ item.fullName }}</td>
+    <td>{{ item.email }}</td>
+    <td (click)="getEmployee(item.id)">
+      Edit
+    </td>
+    <td (click)="deleteEmployee(item.id)">
+      Delete
+    </td>
+  </tr>
+</table>

@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { AngularFirestore } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
 import * as firebase from 'firebase';
+import { IEmployee } from './employee';
 
 @Injectable({
   providedIn: 'root'
@@ -11,17 +12,21 @@ export class EmployeeService {
 
   constructor(private db: AngularFirestore) { }
 
-  createEmployee(value) {
-    var newPostKey = firebase.database().ref().child('employees').push().key;
-    return this.db.collection('employees').add({
-      empId: newPostKey,
-      email: value.email,
-      fullName: value.fullName,
-    });
+  createEmployee(employee: IEmployee) {
+    return this.db.collection('employees').add(employee);
   }
 
   getAllEmployees(): Observable<any[]> {
-    return this.db.collection('employees').valueChanges();
+    return this.db.collection('employees').snapshotChanges();
+  }
+
+  getEmployeeById(id) {
+    return this.db.doc('employees/' + id).get();
+  }
+
+
+  deleteEmployee(id) {
+    return this.db.collection("employees").doc(id).delete();
   }
 
 }

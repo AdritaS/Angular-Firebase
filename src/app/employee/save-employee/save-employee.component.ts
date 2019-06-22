@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl } from '@angular/forms';
 import { EmployeeService } from '../employee.service';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-save-employee',
@@ -10,11 +10,12 @@ import { Router } from '@angular/router';
 })
 export class SaveEmployeeComponent implements OnInit {
 
-  constructor(private service: EmployeeService, private router: Router) { }
+  constructor(private service: EmployeeService, private router: Router, private route: ActivatedRoute) { }
 
   employeeForm: FormGroup;
 
   ngOnInit() {
+
     this.employeeForm = new FormGroup({
       fullName: new FormControl(),
       email: new FormControl(),
@@ -24,6 +25,22 @@ export class SaveEmployeeComponent implements OnInit {
         proficiency: new FormControl()
       })
     });
+
+    let routeParam = this.route.snapshot.params['id'];
+    if (routeParam) {
+      this.getEmployeeById(routeParam)
+    }
+  }
+
+  getEmployeeById(id) {
+    this.service.getEmployeeById(id).subscribe(
+      res => {
+        console.log(res.data())
+        //this.employeeForm.setValue(res.data());
+        this.employeeForm.patchValue(res.data());
+
+      }
+    );
   }
 
   onSubmit(): void {

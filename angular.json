@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "Angular-Firebase": {
+    "Angular-Firebase-CRUD": {
       "root": "",
       "sourceRoot": "src",
       "projectType": "application",
@@ -13,7 +13,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/Angular-Firebase",
+            "outputPath": "dist/Angular-Firebase-CRUD",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
@@ -62,18 +62,18 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "Angular-Firebase:build"
+            "browserTarget": "Angular-Firebase-CRUD:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "Angular-Firebase:build:production"
+              "browserTarget": "Angular-Firebase-CRUD:build:production"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "Angular-Firebase:build"
+            "browserTarget": "Angular-Firebase-CRUD:build"
           }
         },
         "test": {
@@ -107,7 +107,7 @@
         }
       }
     },
-    "Angular-Firebase-e2e": {
+    "Angular-Firebase-CRUD-e2e": {
       "root": "e2e/",
       "projectType": "application",
       "prefix": "",
@@ -116,11 +116,11 @@
           "builder": "@angular-devkit/build-angular:protractor",
           "options": {
             "protractorConfig": "e2e/protractor.conf.js",
-            "devServerTarget": "Angular-Firebase:serve"
+            "devServerTarget": "Angular-Firebase-CRUD:serve"
           },
           "configurations": {
             "production": {
-              "devServerTarget": "Angular-Firebase:serve:production"
+              "devServerTarget": "Angular-Firebase-CRUD:serve:production"
             }
           }
         },
@@ -136,5 +136,5 @@
       }
     }
   },
-  "defaultProject": "Angular-Firebase"
+  "defaultProject": "Angular-Firebase-CRUD"
 }

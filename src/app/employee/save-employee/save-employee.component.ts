@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormControl } from '@angular/forms';
+import { FormGroup, FormControl, FormBuilder } from '@angular/forms';
 import { EmployeeService } from '../employee.service';
 import { Router, ActivatedRoute } from '@angular/router';
 
@@ -10,19 +10,29 @@ import { Router, ActivatedRoute } from '@angular/router';
 })
 export class SaveEmployeeComponent implements OnInit {
 
-  constructor(private service: EmployeeService, private router: Router, private route: ActivatedRoute) { }
+  constructor(private service: EmployeeService, private fb: FormBuilder, private router: Router, private route: ActivatedRoute) { }
 
   employeeForm: FormGroup;
 
   ngOnInit() {
 
-    this.employeeForm = new FormGroup({
-      fullName: new FormControl(),
-      email: new FormControl(),
-      skills: new FormGroup({
-        skillName: new FormControl(),
-        experienceInYears: new FormControl(),
-        proficiency: new FormControl()
+    // this.employeeForm = new FormGroup({
+    //   fullName: new FormControl(),
+    //   email: new FormControl(),
+    //   skills: new FormGroup({
+    //     skillName: new FormControl(),
+    //     experienceInYears: new FormControl(),
+    //     proficiency: new FormControl()
+    //   })
+    // });
+
+    this.employeeForm = this.fb.group({
+      fullName: [''],
+      email: [''],
+      skills: this.fb.group({
+        skillName: [''],
+        experienceInYears: [''],
+        proficiency: ['beginner']
       })
     });
 
@@ -36,9 +46,7 @@ export class SaveEmployeeComponent implements OnInit {
     this.service.getEmployeeById(id).subscribe(
       res => {
         console.log(res.data())
-        //this.employeeForm.setValue(res.data());
-        this.employeeForm.patchValue(res.data());
-
+        this.employeeForm.setValue(res.data());
       }
     );
   }

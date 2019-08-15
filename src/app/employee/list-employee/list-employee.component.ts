@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import { EmployeeService } from '../employee.service';
-import { IEmployee } from '../employee';
+import { IEmployee } from '../IEmployee';
 import { Router } from '@angular/router';
 
 @Component({

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormControl, FormBuilder, Validators, AbstractControl } from '@angular/forms';
+import { FormGroup, FormControl, FormBuilder, Validators, AbstractControl, EmailValidator, FormArray } from '@angular/forms';
 import { EmployeeService } from '../employee.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { CustomValidators } from 'src/app/shared/custom.validators';
@@ -29,29 +29,24 @@ export class SaveEmployeeComponent implements OnInit {
       'required': 'Phone is required.',
       'minlength': 'Phone Number must be 10 digits.',
     },
+    'uan': {
+      'required': 'UAN is required.',
+    },
+    'confirmUAN': {
+      'required': 'Confirm UAN is required.',
+    },
+    'UANGroup': {
+      'UANMismatch': 'UAN and Confirm do not match.'
+    },
     'pan': {
       'required': 'PAN No is required.',
       'panFormat': 'PAN No Format should AAAAA1111A'
-    },
-    'skillName': {
-      'required': 'Skill Name is required.',
-    },
-    'experienceInYears': {
-      'required': 'Phone is required.',
-    },
-    'proficiency': {
-      'required': 'Proficiency is required.',
-    },
+    }
   };
   formErrors = {
-    'fullName': '',
-    'email': '',
-    'phone': '',
-    'pan': '',
-    'skillName': '',
-    'experienceInYears': '',
-    'proficiency': ''
-  };
+
+  }
+    
 
   ngOnInit() {
 
@@ -60,12 +55,14 @@ export class SaveEmployeeComponent implements OnInit {
       contactPreference: ['email'],
       email: ['', [Validators.required, CustomValidators.emailDomain('gmail.com')]],
       phone: [''],
-      pan: ['', [Validators.required,CustomValidators.panFormat]],
-      skills: this.fb.group({
-        skillName: ['', Validators.required],
-        experienceInYears: ['', Validators.required],
-        proficiency: ['', Validators.required]
-      })
+      UANGroup: this.fb.group({
+        uan: ['', [Validators.required]],
+        confirmUAN: ['', [Validators.required]],
+      }, { validators: matchUANs }),
+      pan: ['', [Validators.required, CustomValidators.panFormat]],
+      skills: this.fb.array([
+        this.addSkillFormGroup()
+      ])
     });
 
     this.detectValueChanges()
@@ -76,26 +73,45 @@ export class SaveEmployeeComponent implements OnInit {
     }
   }
 
+  addSkillFormGroup(): FormGroup {
+    return this.fb.group({
+      skillName: ['', Validators.required],
+      experienceInYears: ['', Validators.required],
+      proficiency: ['', Validators.required]
+    });
+  }
+
   logValidationErrors(group: FormGroup): void {
     Object.keys(group.controls).forEach((key: string) => {
       const abstractControl = group.get(key);
+      this.formErrors[key] = '';
+      if (abstractControl && !abstractControl.valid && (abstractControl.touched || abstractControl.dirty)) {
+        const messages = this.validationMessages[key];
+        for (const errorKey in abstractControl.errors) {
+          if (errorKey) {
+            this.formErrors[key] += messages[errorKey] + ' ';
+            console.log(this.formErrors[key])
+          }
+        }
+      }
       if (abstractControl instanceof FormGroup) {
         this.logValidationErrors(abstractControl);
-      } else {
-        this.formErrors[key] = '';
-        if (abstractControl && !abstractControl.valid && (abstractControl.touched || abstractControl.dirty)) {
-          const messages = this.validationMessages[key];
-          for (const errorKey in abstractControl.errors) {
-            if (errorKey) {
-              this.formErrors[key] += messages[errorKey] + ' ';
-              console.log(this.formErrors[key])
-            }
+      }
+      if (abstractControl instanceof FormArray) {
+        for (const control of abstractControl.controls) {
+          if (control instanceof FormGroup) {
+            this.logValidationErrors(control);
           }
         }
       }
     });
   }
-
+  addSkillButtonClick(): void {
+    (<FormArray>this.employeeForm.get('skills')).push(this.addSkillFormGroup());
+  }
+  removeSkillButtonClick(skillGroupIndex: number): void {
+    (<FormArray>this.employeeForm.get('skills')).removeAt(skillGroupIndex);
+  }
 
   detectValueChanges() {
     // this.employeeForm.get('fullName').valueChanges.subscribe(
@@ -138,6 +154,14 @@ export class SaveEmployeeComponent implements OnInit {
   }
 
   onSubmit(): void {
+
+    // const formArray = new FormArray([
+    //   new FormControl('John', Validators.required),
+    //   new FormGroup({
+    //     country: new FormControl('', Validators.required)
+    //   }),
+    //   new FormArray([])
+    // ])
     console.log(this.employeeForm.value);
     this.service.createEmployee(this.employeeForm.value).then(
       res => {
@@ -160,6 +184,18 @@ export class SaveEmployeeComponent implements OnInit {
 
 
 }
+
+function matchUANs(group: AbstractControl): { [key: string]: any } | null {
+  const UANControl = group.get('uan');
+  const confirmUANControl = group.get('confirmUAN');
+
+  if (UANControl.value === confirmUANControl.value || confirmUANControl.pristine) {
+    return null;
+  } else {
+    return { 'UANMismatch': true };
+  }
+}
+
 
 
 

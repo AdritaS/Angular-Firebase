@@ -2,6 +2,9 @@
   <tr *ngFor="let item of employeeList">
     <td>{{ item.fullName }}</td>
     <td>{{ item.email }}</td>
+    <td>{{ item.phone }}</td>
+    <td>{{ item.pan }}</td>
+    <td>{{ item.uan }}</td>
     <td (click)="getEmployee(item.id)">
       Edit
     </td>

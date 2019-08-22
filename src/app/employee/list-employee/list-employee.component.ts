@@ -39,7 +39,7 @@ export class ListEmployeeComponent implements OnInit {
     );
   }
 
-  getEmployee(id) {
+  goToEdit(id) {
     this.router.navigate(['/update',id])
   }
 

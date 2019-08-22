@@ -29,4 +29,9 @@ export class EmployeeService {
     return this.db.collection("employees").doc(id).delete();
   }
 
+  updateEmployee(id, employee: IEmployee) {
+    return this.db.collection("employees").doc(id).set(employee);
+  }
+
+
 }

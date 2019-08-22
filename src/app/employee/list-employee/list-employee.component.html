@@ -1,15 +1,22 @@
-<table class="table">
+<table class="table table-bordered">
+  <tr>
+    <th>FullName </th>
+    <th>Email </th>
+    <th>phone </th>
+    <th>pan </th>
+    <th>uan </th>
+    <th> </th>
+  </tr>
   <tr *ngFor="let item of employeeList">
     <td>{{ item.fullName }}</td>
     <td>{{ item.email }}</td>
     <td>{{ item.phone }}</td>
     <td>{{ item.pan }}</td>
     <td>{{ item.uan }}</td>
-    <td (click)="getEmployee(item.id)">
-      Edit
+    <td>
+      <button class="btn btn-primary" (click)="goToEdit(item.id)">Edit</button>
+      <button class="btn btn-danger" (click)="deleteEmployee(item.id)" style="margin-left: 5px">Delete</button>
     </td>
-    <td (click)="deleteEmployee(item.id)">
-      Delete
-    </td>
+
   </tr>
 </table>

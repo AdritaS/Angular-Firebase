@@ -3,6 +3,8 @@ import { FormGroup, FormControl, FormBuilder, Validators, AbstractControl, Email
 import { EmployeeService } from '../employee.service';
 import { Router, ActivatedRoute } from '@angular/router';
 import { CustomValidators } from 'src/app/shared/custom.validators';
+import { IEmployee } from '../IEmployee';
+import { ISkill } from '../ISkill';
 
 @Component({
   selector: 'app-save-employee',
@@ -46,7 +48,7 @@ export class SaveEmployeeComponent implements OnInit {
   formErrors = {
 
   }
-    
+  isEditForm: boolean = false
 
   ngOnInit() {
 
@@ -69,6 +71,7 @@ export class SaveEmployeeComponent implements OnInit {
 
     let routeParam = this.route.snapshot.params['id'];
     if (routeParam) {
+      this.isEditForm = true
       this.getEmployeeById(routeParam)
     }
   }
@@ -81,28 +84,26 @@ export class SaveEmployeeComponent implements OnInit {
     });
   }
 
-  logValidationErrors(group: FormGroup): void {
+
+
+  logValidationErrors(group: FormGroup = this.employeeForm): void {
     Object.keys(group.controls).forEach((key: string) => {
       const abstractControl = group.get(key);
+
       this.formErrors[key] = '';
-      if (abstractControl && !abstractControl.valid && (abstractControl.touched || abstractControl.dirty)) {
+      if (abstractControl && !abstractControl.valid &&
+        (abstractControl.touched || abstractControl.dirty || this.isEditForm)) {
         const messages = this.validationMessages[key];
+
         for (const errorKey in abstractControl.errors) {
           if (errorKey) {
             this.formErrors[key] += messages[errorKey] + ' ';
-            console.log(this.formErrors[key])
           }
         }
       }
+
       if (abstractControl instanceof FormGroup) {
         this.logValidationErrors(abstractControl);
-      }
-      if (abstractControl instanceof FormArray) {
-        for (const control of abstractControl.controls) {
-          if (control instanceof FormGroup) {
-            this.logValidationErrors(control);
-          }
-        }
       }
     });
   }
@@ -110,7 +111,10 @@ export class SaveEmployeeComponent implements OnInit {
     (<FormArray>this.employeeForm.get('skills')).push(this.addSkillFormGroup());
   }
   removeSkillButtonClick(skillGroupIndex: number): void {
-    (<FormArray>this.employeeForm.get('skills')).removeAt(skillGroupIndex);
+    const skillsFormArray = <FormArray>this.employeeForm.get('skills');
+    skillsFormArray.removeAt(skillGroupIndex);
+    skillsFormArray.markAsDirty();
+    skillsFormArray.markAsTouched();
   }
 
   detectValueChanges() {
@@ -148,27 +152,47 @@ export class SaveEmployeeComponent implements OnInit {
     this.service.getEmployeeById(id).subscribe(
       res => {
         console.log(res.data())
-        this.employeeForm.setValue(res.data());
+        // this.employeeForm.setValue(res.data());
+        this.employeeForm.patchValue(res.data());
+        this.employeeForm.setControl('skills', this.setExistingSkills(res.data().skills));
       }
     );
   }
 
+  setExistingSkills(skillSets: ISkill[]): FormArray {
+    const formArray = new FormArray([]);
+    skillSets.forEach(s => {
+      formArray.push(this.fb.group({
+        skillName: s.skillName,
+        experienceInYears: s.experienceInYears,
+        proficiency: s.proficiency
+      }));
+    });
+
+    return formArray;
+  }
+
   onSubmit(): void {
 
-    // const formArray = new FormArray([
-    //   new FormControl('John', Validators.required),
-    //   new FormGroup({
-    //     country: new FormControl('', Validators.required)
-    //   }),
-    //   new FormArray([])
-    // ])
+
     console.log(this.employeeForm.value);
-    this.service.createEmployee(this.employeeForm.value).then(
-      res => {
-        this.router.navigate(['/list']);
-      }
-    )
-    // console.log(this.employeeForm.get("fullName").value,this.employeeForm.get("fullName").valid);
+    let employeeData: IEmployee = this.employeeForm.value
+    console.log(employeeData);
+
+    if (this.isEditForm) {
+      this.service.updateEmployee(this.route.snapshot.params['id'],this.employeeForm.value).then(
+        res => {
+          this.router.navigate(['/list']);
+        }
+      )
+
+    } else {
+      this.service.createEmployee(this.employeeForm.value).then(
+        res => {
+          this.router.navigate(['/list']);
+        }
+      )
+    }
 
   }
 

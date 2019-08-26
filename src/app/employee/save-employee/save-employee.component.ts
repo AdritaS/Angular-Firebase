@@ -182,14 +182,14 @@ export class SaveEmployeeComponent implements OnInit {
     if (this.isEditForm) {
       this.service.updateEmployee(this.route.snapshot.params['id'],this.employeeForm.value).then(
         res => {
-          this.router.navigate(['/list']);
+          this.router.navigate(['employees']);
         }
       )
 
     } else {
       this.service.createEmployee(this.employeeForm.value).then(
         res => {
-          this.router.navigate(['/list']);
+          this.router.navigate(['employees']);
         }
       )
     }

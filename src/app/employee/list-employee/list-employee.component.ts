@@ -40,7 +40,7 @@ export class ListEmployeeComponent implements OnInit {
   }
 
   goToEdit(id) {
-    this.router.navigate(['/update',id])
+    this.router.navigate(['employees/update',id])
   }
 
 }

@@ -1,22 +1,18 @@
 import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
-import { ListEmployeeComponent } from './employee/list-employee/list-employee.component';
-import { SaveEmployeeComponent } from './employee/save-employee/save-employee.component';
+import { RouterModule, Routes, PreloadAllModules } from '@angular/router';
 import { HomeComponent } from './home/home.component';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 
 
 const appRoutes: Routes = [
+  { path: 'employees', loadChildren: './employee/employee.module#EmployeeModule' },
   { path: 'home', component: HomeComponent },
-  { path: 'list', component: ListEmployeeComponent },
-  { path: 'create', component: SaveEmployeeComponent },
-  { path: 'update/:id', component: SaveEmployeeComponent },
   { path: '', redirectTo: '/home', pathMatch: 'full' },
   { path: '**', component: PageNotFoundComponent }
 ];
 
 @NgModule({
-  imports: [ RouterModule.forRoot(appRoutes) ],
+  imports: [ RouterModule.forRoot(appRoutes, {preloadingStrategy : PreloadAllModules } )],
   exports: [ RouterModule ]
 })
-export class AppRoutingModule { }
+export class AppRoutingModule { } 
